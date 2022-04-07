@@ -29,6 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Advance"></Button>
+
     </LinearLayout>
 
     <LinearLayout
@@ -47,7 +48,7 @@
     <LinearLayout
         android:id="@+id/linearLayoutTmap"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="616dp"
         android:orientation="vertical"></LinearLayout>
 
 
