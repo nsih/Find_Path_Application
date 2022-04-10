@@ -1,15 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.widget.LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
     xmlns:tools="http://schemas.android.com/tools"
+
+
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:layout_gravity="start"
     tools:context="com.skt.">
 
-    <TextView
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="옵션 선택후 목적지를 찍고 start"></TextView>
+        android:orientation="horizontal">
+        android:
+
+        <Button
+            android:id="@+id/buttonOpenSide"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="☰"></Button>
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:text="Find Safe path!"
+            android:textSize="25dp" />
+    </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,14 +46,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Default"></Button>
+            android:text="Basic mode"></Button>
 
         <Button
             android:id="@+id/buttonAdvance"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Advance"></Button>
+            android:text="Advanced mode"></Button>
 
     </LinearLayout>
 
@@ -42,7 +67,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="START"></Button>
+            android:text="start"></Button>
     </LinearLayout>
 
     <LinearLayout
@@ -51,5 +76,6 @@
         android:layout_height="616dp"
         android:orientation="vertical"></LinearLayout>
 
+    <include layout="@layout/appbar"/>
 
-</android.widget.LinearLayout>
+</LinearLayout>

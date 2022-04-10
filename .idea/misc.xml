@@ -3,8 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/sih65/AndroidStudioProjects/MyApplication/app/src/main/res/drawable/ic_launcher_background.xml" value="0.20989583333333334" />
         <entry key="..\:/Users/sih65/AndroidStudioProjects/MyApplication/app/src/main/res/layout/activity_main.xml" value="0.25" />
-        <entry key="..\:/Users/sih65/AndroidStudioProjects/MyApplication/app/src/main/res/layout/appbar.xml" value="0.21614583333333334" />
+        <entry key="..\:/Users/sih65/AndroidStudioProjects/MyApplication/app/src/main/res/layout/appbar.xml" value="0.25" />
+        <entry key="..\:/Users/sih65/AndroidStudioProjects/MyApplication/app/src/main/res/layout/header.xml" value="0.20104166666666667" />
+        <entry key="..\:/Users/sih65/AndroidStudioProjects/MyApplication/app/src/main/res/layout/menu.xml" value="0.20104166666666667" />
+        <entry key="..\:/Users/sih65/AndroidStudioProjects/MyApplication/app/src/main/res/layout/sidebar_hidden.xml" value="0.19375" />
+        <entry key="..\:/Users/sih65/AndroidStudioProjects/MyApplication/app/src/main/res/layout/test.xml" value="0.19322916666666667" />
       </map>
     </option>
   </component>

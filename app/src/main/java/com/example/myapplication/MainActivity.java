@@ -13,8 +13,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapGpsManager;
@@ -35,6 +37,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+
 public class MainActivity extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback
 {
 
@@ -53,6 +56,13 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     public static TMapPoint myPoint;
     public static TMapPoint endPoint;
 
+    /*
+    private DrawerLayout drawerLayout;
+    private View drawerView;
+
+     */
+
+
     //public String result;
 
     @Override
@@ -60,6 +70,12 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     {
         super.onCreate((savedInstanceState));
         setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main);
+
+        /*
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
+        */
 
         LinearLayout linearLayoutTmap = (LinearLayout) findViewById(R.id.linearLayoutTmap);
         tMapView =  new TMapView(this);
@@ -68,8 +84,19 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         tMapView.setZoomLevel(14);
         tMapView.setMapType(TMapView.MAPTYPE_STANDARD);
 
+
+        /*
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerView = (View) findViewById(R.id.drawerView);
+
+         */
+
+
         ShowMap(linearLayoutTmap, tMapView);
+
         button(tMapView);
+
+
 
 
         //Locating
@@ -87,6 +114,15 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         //RecievePoint();   //자기위치, 클릭지정.
         DrawMarker();
     }
+
+    DrawerLayout.DrawerListener listener = new DrawerLayout.DrawerListener()
+    {
+        @Override public void onDrawerSlide(@NonNull View drawerView, float slideOffset) { }
+        @Override public void onDrawerOpened(@NonNull View drawerView) { }
+        @Override public void onDrawerClosed(@NonNull View drawerView) { }
+        @Override public void onDrawerStateChanged(int newState) { }
+    };
+
 
     @Override
     public void onLocationChange(Location location)
@@ -122,11 +158,15 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         Button buttonAdvance = (Button)findViewById(R.id.buttonAdvance);
         Button buttonStart = (Button)findViewById(R.id.buttonStart);
 
+        Button buttonOpenSide = (Button)findViewById(R.id.buttonOpenSide);
 
-        Button button01;
-        Button button02;
-        Button button03;
-        Button button04;
+        //buttonOpenSide
+
+
+        Button btn_side_cctv;
+        Button btn_side_path;
+        Button btn_side_light;
+        Button btn_side_police;
 
 
         buttonDefault.setOnClickListener(new View.OnClickListener()
@@ -171,6 +211,15 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 FindPath mFindPath = new FindPath();
                 mFindPath.start();
                  */
+            }
+        });
+
+        buttonOpenSide.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                //drawerLayout.openDrawer(drawerView);
             }
         });
 
