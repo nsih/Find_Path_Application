@@ -13,27 +13,6 @@
     tools:context="com.skt.">
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        android:
-
-        <Button
-            android:id="@+id/buttonOpenSide"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="☰"></Button>
-
-        <TextView
-            android:id="@+id/text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="5"
-            android:text="Find Safe path!"
-            android:textSize="25dp" />
-    </LinearLayout>
 
 
     <LinearLayout
@@ -46,14 +25,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Basic mode"></Button>
+            android:text="목적지 설정"></Button>
 
         <Button
             android:id="@+id/buttonAdvance"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Advanced mode"></Button>
+            android:text="길찾기"></Button>
 
     </LinearLayout>
 
@@ -67,7 +46,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="start"></Button>
+            android:text="마중요청"></Button>
     </LinearLayout>
 
     <LinearLayout
