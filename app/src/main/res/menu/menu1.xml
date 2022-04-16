@@ -3,16 +3,16 @@
 
     <item
         android:id="@+id/item1"
-        android:title="cctv" />
+        android:title="내 주변 안전지표 찾기" />
     <item
         android:id="@+id/item2"
-        android:title="가로등" />
+        android:title="NULL" />
     <item
         android:id="@+id/item3"
-        android:title="방범시설" />
+        android:title="NULL" />
     <item
         android:id="@+id/item4"
-        android:title="교통량" />
+        android:title="NULL" />
 
     <item
         android:id="@+id/item5"

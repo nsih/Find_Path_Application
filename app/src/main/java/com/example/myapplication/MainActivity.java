@@ -61,8 +61,8 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     public static TMapView tMapView;
 
     TMapGpsManager tMapGPS = null;
-    public static TMapPoint myPoint;
-    public static TMapPoint endPoint;
+    public static TMapPoint myPoint;    //gps 포인트
+    public static TMapPoint endPoint;   //목적지 포인트
 
     /*
     private DrawerLayout drawerLayout;
@@ -140,6 +140,30 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         myPoint = new TMapPoint(location.getLongitude(), location.getLatitude());
     }
 
+    public void GetEndPoint()
+    {
+        endPoint = tMapView.getCenterPoint();
+
+        double Latitude = endPoint.getLatitude();
+        double Longtitude = endPoint.getLongitude();
+
+        TMapPoint tMapPointMarker = new TMapPoint(Latitude ,Longtitude);
+
+        TMapMarkerItem tItem = new TMapMarkerItem();
+
+        tItem.setTMapPoint(tMapPointMarker);
+        tItem.setName("end point");
+        tItem.setVisible(TMapMarkerItem.VISIBLE);
+
+        Bitmap bitmapPass = BitmapFactory.decodeResource(context.getResources(),R.drawable.poi);
+        tItem.setIcon(bitmapPass);
+
+        tItem.setPosition(0.5f, 1.0f);         // 마커의 중심점을 하단, 중앙으로 설정
+
+        tMapView.addMarkerItem(tItem.getName(),tItem);
+
+    }
+
     void ShowMap( android.widget.LinearLayout linearLayoutTmap , com.skt.Tmap.TMapView tMapView)
     {
         tMapView.setSKTMapApiKey(tMapKey);
@@ -162,7 +186,10 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     {
         Button buttonDefault = (Button)findViewById(R.id.buttonDefault);
         Button buttonAdvance = (Button)findViewById(R.id.buttonAdvance);
+
+        Button buttonSetEnd = (Button)findViewById(R.id.buttonSetEnd);
         Button buttonStart = (Button)findViewById(R.id.buttonStart);
+
 
         buttonDefault.setOnClickListener(new View.OnClickListener()
         {
@@ -204,14 +231,20 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             }
         });
 
+        buttonSetEnd.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                GetEndPoint();
+            }
+        });
+
     }
 
 
-
-    ///////////////
-
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)    //...
     {
         GetNodeData mGetNodeData = new GetNodeData();
 
@@ -279,19 +312,14 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
     void RecievePoint() //시작점 끝점 찍혀있는 마크로 업데이트
     {
-
         m_mapPoint.add( new WayPoint("Start",myPoint.getLongitude(),myPoint.getLatitude(),0) );
-        m_mapPoint.add( new WayPoint("End",35.2222, 128.6928,5) );
-
-        //35.2222, 128.6834 상남 시장
-        //35.2303, 128.6803
-        //35.2222, 128.6928
+        m_mapPoint.add( new WayPoint("End",endPoint.getLatitude(), endPoint.getLongitude(), 6) );
     }
 
     void DrawMarker()   //언젠가 지우는거 여기에 추가해야함.
     {
-        //0 출발지 / 5 목적지
-        //1 CCTV / 2 경찰서,파출소,지구대 같은거 / 3 교통정보 /4 가로등
+        //0 출발지 / 6 목적지
+        //1 CCTV / 2 경찰서,파출소,지구대 같은거 / 3 교통정보 /4 가로등 / 5 편의점
 
         for (int i = 0 ; i < m_mapPoint.size() ; i++)
         {
@@ -322,7 +350,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 tItem.setName("point " + i);
                 tItem.setVisible(TMapMarkerItem.VISIBLE);
 
-                Bitmap bitmapCCTV = BitmapFactory.decodeResource(context.getResources(),R.drawable.pass);
+                Bitmap bitmapCCTV = BitmapFactory.decodeResource(context.getResources(),R.drawable.police);
                 tItem.setIcon(bitmapCCTV);
 
                 tMapView.addMarkerItem(m_mapPoint.get(i).getName(),tItem);
@@ -338,7 +366,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 tItem.setName("point " + i);
                 tItem.setVisible(TMapMarkerItem.VISIBLE);
 
-                Bitmap bitmapPass = BitmapFactory.decodeResource(context.getResources(),R.drawable.pass);
+                Bitmap bitmapPass = BitmapFactory.decodeResource(context.getResources(),R.drawable.pop);
                 tItem.setIcon(bitmapPass);
 
                 tItem.setPosition(-0.01f, 0.95f);         // 마커의 중심점을 하단, 중앙으로 설정
@@ -364,9 +392,27 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 tMapView.addMarkerItem(m_mapPoint.get(i).getName(),tItem);
             }
 
+            else if(m_mapPoint.get(i).getType() == 5)   //편의점
+            {
+                TMapPoint tMapPointMarker = new TMapPoint(m_mapPoint.get(i).getLatitude() , m_mapPoint.get(i).getLongitude());
+
+                TMapMarkerItem tItem = new TMapMarkerItem();
+
+                tItem.setTMapPoint(tMapPointMarker);
+                tItem.setName("point " + i);
+                tItem.setVisible(TMapMarkerItem.VISIBLE);
+
+                Bitmap bitmapLight = BitmapFactory.decodeResource(context.getResources(),R.drawable.conv);
+                tItem.setIcon(bitmapLight);
+
+                tItem.setPosition(-0.02f, 0.92f);         // 마커의 중심점을 하단, 중앙으로 설정
+
+                tMapView.addMarkerItem(m_mapPoint.get(i).getName(),tItem);
+            }
 
 
-            else if(m_mapPoint.get(i).getType() == 0 || m_mapPoint.get(i).getType() == 5)    //출발 목적.
+
+            else if(m_mapPoint.get(i).getType() == 0 || m_mapPoint.get(i).getType() == 6)    //출발 목적.
             {
                 TMapPoint tMapPointMarker = new TMapPoint(m_mapPoint.get(i).getLatitude() , m_mapPoint.get(i).getLongitude());
 
@@ -385,7 +431,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             }
         }
     }
-
     public class FindPath extends Thread
     {
         @Override
@@ -427,7 +472,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             }
         }
     }
-
     public class GetData extends Thread
     {
         String _url;
@@ -490,7 +534,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
         }
     }
-
     public void parseJSON(String src)   //parsing
     {
         try {
@@ -513,8 +556,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         }
     }
 
-
-
     /////////////////////////
     //node
 
@@ -531,8 +572,8 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 m_nodePoint.clear();
                 RecievePoint(); //초기화.
 
-                Double sLa = m_mapPoint.get(0).getLatitude();
-                Double sLo = m_mapPoint.get(0).getLongitude();
+                Double sLa = myPoint.getLongitude();
+                Double sLo = myPoint.getLatitude();
 
                 //http://api.floodnut.com/safe/node?srcLati=35.248687&srcLongti=128.682841&mode=1
                 _url =  "http://api.floodnut.com/safe/node?" +
@@ -603,7 +644,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 tItem.setName("point " + i);
                 tItem.setVisible(TMapMarkerItem.VISIBLE);
 
-                Bitmap bitmapCCTV = BitmapFactory.decodeResource(context.getResources(),R.drawable.pass);
+                Bitmap bitmapCCTV = BitmapFactory.decodeResource(context.getResources(),R.drawable.police);
                 tItem.setIcon(bitmapCCTV);
 
                 tMapView.addMarkerItem(m_nodePoint.get(i).getName(),tItem);
@@ -619,10 +660,8 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 tItem.setName("point " + i);
                 tItem.setVisible(TMapMarkerItem.VISIBLE);
 
-                Bitmap bitmapPass = BitmapFactory.decodeResource(context.getResources(),R.drawable.pass);
+                Bitmap bitmapPass = BitmapFactory.decodeResource(context.getResources(),R.drawable.pop);
                 tItem.setIcon(bitmapPass);
-
-                tItem.setPosition(-0.01f, 0.95f);         // 마커의 중심점을 하단, 중앙으로 설정
 
                 tMapView.addMarkerItem(m_nodePoint.get(i).getName(),tItem);
             }
@@ -640,7 +679,23 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 Bitmap bitmapLight = BitmapFactory.decodeResource(context.getResources(),R.drawable.light);
                 tItem.setIcon(bitmapLight);
 
-                tItem.setPosition(-0.01f, 0.95f);         // 마커의 중심점을 하단, 중앙으로 설정
+                tItem.setPosition(-0.02f, 0.92f);         // 마커의 중심점을 하단, 중앙으로 설정
+
+                tMapView.addMarkerItem(m_nodePoint.get(i).getName(),tItem);
+            }
+
+            else if(m_nodePoint.get(i).getType() == 5)   //편의점
+            {
+                TMapPoint tMapPointMarker = new TMapPoint(m_nodePoint.get(i).getLatitude() , m_nodePoint.get(i).getLongitude());
+
+                TMapMarkerItem tItem = new TMapMarkerItem();
+
+                tItem.setTMapPoint(tMapPointMarker);
+                tItem.setName("point " + i);
+                tItem.setVisible(TMapMarkerItem.VISIBLE);
+
+                Bitmap bitmapLight = BitmapFactory.decodeResource(context.getResources(),R.drawable.conv);
+                tItem.setIcon(bitmapLight);
 
                 tMapView.addMarkerItem(m_nodePoint.get(i).getName(),tItem);
             }
