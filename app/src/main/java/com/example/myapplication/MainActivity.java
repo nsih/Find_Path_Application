@@ -9,16 +9,19 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapGpsManager;
@@ -40,6 +43,8 @@ import java.net.URL;
 import java.util.ArrayList;
 
 
+
+
 public class MainActivity extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback
 {
 
@@ -55,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     private ArrayList<WayPoint> m_nodePoint = new ArrayList<WayPoint>();
 
     public static int safety = 0;
-    public static int node = 0;
 
     public static Context context;
     public static TMapView tMapView;
@@ -63,6 +67,9 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     TMapGpsManager tMapGPS = null;
     public static TMapPoint myPoint;    //gps 포인트
     public static TMapPoint endPoint;   //목적지 포인트
+
+    static final int SMS_RECEIVE_PERMISSON=1;
+
 
     /*
     private DrawerLayout drawerLayout;
@@ -92,13 +99,10 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         tMapView.setZoomLevel(14);
         tMapView.setMapType(TMapView.MAPTYPE_STANDARD);
 
-
         /*
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerView = (View) findViewById(R.id.drawerView);
-
          */
-
 
         ShowMap(linearLayoutTmap, tMapView);
 
@@ -107,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
 
 
-        //Locating
+        //Locating Permission
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED){
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -121,6 +125,8 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
         //RecievePoint();   //자기위치, 클릭지정.
         DrawMarker();
+
+
     }
 
     @Override
@@ -161,7 +167,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         tItem.setPosition(0.5f, 1.0f);         // 마커의 중심점을 하단, 중앙으로 설정
 
         tMapView.addMarkerItem(tItem.getName(),tItem);
-
     }
 
     void ShowMap( android.widget.LinearLayout linearLayoutTmap , com.skt.Tmap.TMapView tMapView)
@@ -242,15 +247,13 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
     }
 
-
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item)    //...
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)    //option
     {
         GetNodeData mGetNodeData = new GetNodeData();
 
         switch (item.getItemId()) {
             case R.id.item1:
-                node = 1;
                 if(isNodeDraw == true)
                     isNodeDraw = false;
                 else
@@ -262,53 +265,130 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
 
             case R.id.item2:
-                node = 2;
-
-                if(isNodeDraw == true)
-                    isNodeDraw = false;
-                else
-                    isNodeDraw = true;
-
-                mGetNodeData.start();
+                SendSMS("","");
 
                 return true;
 
             case R.id.item3:
-                node = 3;
-
-                if(isNodeDraw == true)
-                    isNodeDraw = false;
-                else
-                    isNodeDraw = true;
-
-                mGetNodeData.start();
-                return true;
-
-
-            case R.id.item4:
-                node = 4;
-
-                if(isNodeDraw == true)
-                    isNodeDraw = false;
-                else
-                    isNodeDraw = true;
-
-                mGetNodeData.start();
-                return true;
-
-
-            case R.id.item5:
                 isNodeDraw = false;
 
                 NodeMarkerCon mNodeMarkerCon = new NodeMarkerCon();
                 mNodeMarkerCon.start();
-
                 return true;
         }
         return false;
     }
 
+
     ///////////////
+    //runtime permission
+
+    /*
+    int PERMISSION_ALL = 1;
+    String[] PERMISSIONS = {
+            android.Manifest.permission.READ_CONTACTS,
+            android.Manifest.permission.WRITE_CONTACTS,
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            android.Manifest.permission.READ_SMS,
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.SEND_SMS
+    };
+
+    public boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
+    private void getPermission(){
+
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.INTERNET,
+                        Manifest.permission.ACCESS_NETWORK_STATE,
+                        Manifest.permission.WAKE_LOCK,
+                        Manifest.permission.SEND_SMS
+                },
+                1000);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (Build.VERSION.SDK_INT >= 23) {
+
+            // requestPermission의 배열의 index가 아래 grantResults index와 매칭
+            // 퍼미션이 승인되면
+            if(grantResults.length > 0  && grantResults[0]== PackageManager.PERMISSION_GRANTED){
+                Log.d( ".","Permission: "+permissions[0]+ "was "+grantResults[0]);
+
+            }
+            // 퍼미션이 승인 거부되면
+            else {
+                Log.d(".","Permission denied");
+            }
+        }
+    }
+     */
+
+
+
+
+
+    ///////////////
+    //Send MSG
+
+    private void SendSMS(String phoneNumber, String message)
+    {
+        //SMS Permission check
+        int permissonCheck= ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS);
+        if(permissonCheck == PackageManager.PERMISSION_GRANTED){
+            Toast.makeText(getApplicationContext(), "SMS 수신권한 있음", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(getApplicationContext(), "SMS 수신권한 없음", Toast.LENGTH_SHORT).show();
+
+            //권한설정 dialog에서 거부를 누르면
+            //ActivityCompat.shouldShowRequestPermissionRationale 메소드의 반환값이 true가 된다.
+            //단, 사용자가 "Don't ask again"을 체크한 경우
+            //거부하더라도 false를 반환하여, 직접 사용자가 권한을 부여하지 않는 이상, 권한을 요청할 수 없게 된다.
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECEIVE_SMS)){
+                //이곳에 권한이 왜 필요한지 설명하는 Toast나 dialog를 띄워준 후, 다시 권한을 요청한다.
+                Toast.makeText(getApplicationContext(), "SMS권한이 필요합니다", Toast.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.RECEIVE_SMS},       SMS_RECEIVE_PERMISSON);
+            }else{
+                ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.RECEIVE_SMS}, SMS_RECEIVE_PERMISSON);
+            }
+        }
+        ///
+
+        phoneNumber = "01082162178";
+        message = "hello android";
+
+        try {
+            SmsManager smsManager = SmsManager.getDefault();
+            smsManager.sendTextMessage(phoneNumber, null, message, null, null);
+            Toast.makeText(getApplicationContext(), "전송 완료!", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), "전송 오류!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();//오류 원인이 찍힌다.
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+
+    ///////////////
+    // Find Path
 
     void RecievePoint() //시작점 끝점 찍혀있는 마크로 업데이트
     {
@@ -557,7 +637,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     }
 
     /////////////////////////
-    //node
+    //node Marker
 
     public class GetNodeData extends Thread
     {
