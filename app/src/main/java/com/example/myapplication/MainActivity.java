@@ -10,6 +10,7 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -112,13 +113,34 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
 
         //Locating Permission
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED){
+        if(ActivityCompat.checkSelfPermission
+                (this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED)
+        {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1); //위치권한 탐색 허용 관련 내용
             }
             return;
         }
+
+        /*
+        //SMS Permission
+        if(ActivityCompat.checkSelfPermission
+                (this,
+                        Manifest.permission.SEND_SMS)!= PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)!=PackageManager.PERMISSION_GRANTED)
+        {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[] {Manifest.permission.SEND_SMS}, 1); //위치권한 탐색 허용 관련 내용
+            }
+            return;
+        }
+
+         */
+
 
         tMapView.setIconVisibility(true);
         Locating();
@@ -283,7 +305,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     ///////////////
     //runtime permission
 
-    /*
     int PERMISSION_ALL = 1;
     String[] PERMISSIONS = {
             android.Manifest.permission.READ_CONTACTS,
@@ -337,7 +358,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             }
         }
     }
-     */
 
 
 
@@ -349,34 +369,43 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     private void SendSMS(String phoneNumber, String message)
     {
         //SMS Permission check
-        int permissonCheck= ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS);
-        if(permissonCheck == PackageManager.PERMISSION_GRANTED){
-            Toast.makeText(getApplicationContext(), "SMS 수신권한 있음", Toast.LENGTH_SHORT).show();
-        }else{
-            Toast.makeText(getApplicationContext(), "SMS 수신권한 없음", Toast.LENGTH_SHORT).show();
+        int permissonCheck= ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
+        if(permissonCheck == PackageManager.PERMISSION_GRANTED)
+        {
+            Toast.makeText(getApplicationContext(), "SMS 권한 있음", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(), "SMS 권한 없음", Toast.LENGTH_SHORT).show();
 
             //권한설정 dialog에서 거부를 누르면
             //ActivityCompat.shouldShowRequestPermissionRationale 메소드의 반환값이 true가 된다.
             //단, 사용자가 "Don't ask again"을 체크한 경우
             //거부하더라도 false를 반환하여, 직접 사용자가 권한을 부여하지 않는 이상, 권한을 요청할 수 없게 된다.
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECEIVE_SMS)){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS))
+            {
                 //이곳에 권한이 왜 필요한지 설명하는 Toast나 dialog를 띄워준 후, 다시 권한을 요청한다.
-                Toast.makeText(getApplicationContext(), "SMS권한이 필요합니다", Toast.LENGTH_SHORT).show();
-                ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.RECEIVE_SMS},       SMS_RECEIVE_PERMISSON);
-            }else{
-                ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.RECEIVE_SMS}, SMS_RECEIVE_PERMISSON);
+                Toast.makeText(getApplicationContext(), "SMS 권한이 필요합니다", Toast.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.SEND_SMS},       1);
+            }
+            else
+            {
+                ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.SEND_SMS}, 1);
             }
         }
-        ///
 
+        //////
         phoneNumber = "01082162178";
-        message = "hello android";
+        message = "Hello Android";
 
-        try {
+        try
+        {
             SmsManager smsManager = SmsManager.getDefault();
             smsManager.sendTextMessage(phoneNumber, null, message, null, null);
             Toast.makeText(getApplicationContext(), "전송 완료!", Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             Toast.makeText(getApplicationContext(), "전송 오류!", Toast.LENGTH_LONG).show();
             Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();//오류 원인이 찍힌다.
             e.printStackTrace();
