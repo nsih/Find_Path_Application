@@ -119,9 +119,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
         button(tMapView);
 
-
-
-
         //Locating Permission
         if(ActivityCompat.checkSelfPermission
                 (this,
@@ -142,23 +139,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             }
             return;
         }
-
-        /*
-        //SMS Permission
-        if(ActivityCompat.checkSelfPermission
-                (this,
-                        Manifest.permission.SEND_SMS)!= PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)!=PackageManager.PERMISSION_GRANTED)
-        {
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[] {Manifest.permission.SEND_SMS}, 1); //위치권한 탐색 허용 관련 내용
-            }
-            return;
-        }
-
-         */
-
 
         tMapView.setIconVisibility(true);
         Locating();
@@ -182,13 +162,17 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         tMapView.setCenterPoint(location.getLongitude(), location.getLatitude());
 
         myPoint = new TMapPoint(location.getLongitude(), location.getLatitude());
+
+
+        //
+        GetWarningData mGetWarningData = new GetWarningData();
+        mGetWarningData.start();
+
     }
 
     public String receiveName = null;
     public String receivePhone = null;
-
     public String imgUrl = null;
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
@@ -251,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         tMapGPS = new TMapGpsManager(this);
 
         tMapGPS.setMinTime(5000);
-        tMapGPS.setMinDistance(100);
+        tMapGPS.setMinDistance(10);
         tMapGPS.setProvider(tMapGPS.NETWORK_PROVIDER);
         tMapGPS.setProvider(tMapGPS.GPS_PROVIDER);
 
@@ -359,11 +343,11 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 isNodeDraw = false;
                 NodeMarkerCon mNodeMarkerCon = new NodeMarkerCon();
                 mNodeMarkerCon.start();
+
                 return true;
         }
         return false;
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -864,7 +848,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
     /////////////////////////////////
     //이미지 URL
-
+    /*
     public class GetImgUrl extends Thread
     {
         String _url;
@@ -914,6 +898,8 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         }
     }
 
+     */
+
 
     /////////////////////////////////
     //warning!!
@@ -929,15 +915,14 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             try
             {
                 m_warnPoint.clear();
-                RecievePoint(); //초기화.
 
                 Double sLa = myPoint.getLongitude();
                 Double sLo = myPoint.getLatitude();
 
-                //http://api.floodnut.com/safe/node?srcLati=35.248687&srcLongti=128.682841&mode=1
-                _url =  "http://api.floodnut.com/safe/node?" +
-                        "srcLati="+  sLa +"&srcLongti="+ sLo +
-                        "&mode=" + 1;
+                //http://api.floodnut.com/accident/frequentzone?srcLati=35.221401&srcLongi=128.686280&mode=1
+                _url =  "http://api.floodnut.com/accident/frequentzone?" +
+                        "srcLati=" + sLa +"&srcLongi="+ sLo +
+                        "&mode=1";
 
                 java.net.URL url = new URL(_url);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -959,16 +944,10 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                     result = sb.toString();
                 }
 
+
                 //parsing
                 parseJSON_W(result);
-
-                /*
-                * 현재 내위치와 파싱한 모든 좌표들과의 거리비교 후 하나라도 가까우면 계속위험 알림.
-                * 벗어나면 스레드 종료.
-                */
-                TMapPoint point = new TMapPoint(37.566474, 126.985022);
-                double Distance = getDistance(point,point);
-
+                Warning();
 
                 Thread.interrupted();
 
@@ -995,15 +974,47 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 m_warnPoint.add( i, new WayPoint( name, Double.parseDouble(lati), Double.parseDouble(longti), Integer.parseInt(type) ) );
             }
 
-            m_warnPoint.add(0,new WayPoint( "0000",myPoint.getLatitude(), myPoint.getLongitude(),4));
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
+
+    public static double distance = 0;
+
     public void Warning()
     {
-        Toast.makeText(getApplicationContext(), "주의! 사고 다발 지역에 들어왔습니다.", Toast.LENGTH_LONG).show();
+        boolean warn = false;
+
+
+        for(int i = 0 ; i < m_warnPoint.size() ; i++)
+        {
+            TMapPoint point = new TMapPoint(m_warnPoint.get(i).getLatitude(),m_warnPoint.get(i).getLongitude() );
+            distance = getDistance(myPoint,point);
+
+            if(  distance < 1 )
+            {
+                warn = true;
+            }
+        }
+
+        if(warn == true)
+        {
+            MainActivity.this.runOnUiThread(new Runnable() {
+                public void run() {
+                    Toast.makeText(MainActivity.this, "warn : " + distance , Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        else
+        {
+            MainActivity.this.runOnUiThread(new Runnable() {
+                public void run() {
+                    Toast.makeText(MainActivity.this, "nowarn : " + distance , Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+
     }
 
     ///////end
