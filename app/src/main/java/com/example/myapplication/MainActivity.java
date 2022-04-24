@@ -1,14 +1,20 @@
 package com.example.myapplication;
 
+import static com.skt.Tmap.MapUtils.getDistance;
+
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
@@ -20,6 +26,8 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -55,10 +63,11 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     private boolean isNodeDraw;
 
     private ArrayList<WayPoint> m_mapPoint = new ArrayList<WayPoint>();
-    private ArrayList<TMapPoint> points = new ArrayList<TMapPoint>();
-
-
     private ArrayList<WayPoint> m_nodePoint = new ArrayList<WayPoint>();
+
+    private ArrayList<WayPoint> m_warnPoint = new ArrayList<WayPoint>();
+
+    //private ArrayList<TMapPoint> points = new ArrayList<TMapPoint>();
 
     public static int safety = 0;
 
@@ -70,7 +79,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     public static TMapPoint endPoint;   //목적지 포인트
 
     static final int SMS_RECEIVE_PERMISSON=1;
-
 
     /*
     private DrawerLayout drawerLayout;
@@ -88,10 +96,12 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         setContentView(R.layout.activity_main);
         setContentView(R.layout.activity_main);
 
-        /*
+
         ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
-        */
+        //actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setIcon(R.mipmap.ic_cp);
+
 
         LinearLayout linearLayoutTmap = (LinearLayout) findViewById(R.id.linearLayoutTmap);
         tMapView =  new TMapView(this);
@@ -124,6 +134,14 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             }
             return;
         }
+        //context permission
+        if(ActivityCompat.checkSelfPermission(this,Manifest.permission.READ_CONTACTS)!= PackageManager.PERMISSION_GRANTED)
+        {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[] {Manifest.permission.READ_CONTACTS}, 1); //연락처 탐색 허용 관련 내용
+            }
+            return;
+        }
 
         /*
         //SMS Permission
@@ -150,7 +168,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
 
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -158,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         menuInflater.inflate(R.menu.menu1, menu);
         return true;
     }
-
     @Override
     public void onLocationChange(Location location)
     {
@@ -167,6 +183,41 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
         myPoint = new TMapPoint(location.getLongitude(), location.getLatitude());
     }
+
+    public String receiveName = null;
+    public String receivePhone = null;
+
+    public String imgUrl = null;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        if(requestCode == 0)
+        {
+            if(resultCode == RESULT_CANCELED)
+            {
+                Toast.makeText(getApplicationContext(), "RESULT_CANCELED", Toast.LENGTH_LONG).show();
+            }
+
+            else if (resultCode == RESULT_OK)
+            {
+                Cursor cursor = getContentResolver().query(
+                        data.getData(),
+                        new String[]{ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                                ContactsContract.CommonDataKinds.Phone.NUMBER},
+                        null,null,null);
+                cursor.moveToFirst();
+                receiveName = cursor.getString(0);
+                receivePhone = cursor.getString(1);
+                cursor.close();
+
+                Toast.makeText(getApplicationContext(), "마중번호 : "+receivePhone, Toast.LENGTH_LONG).show();
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
 
     public void GetEndPoint()
     {
@@ -190,13 +241,11 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
         tMapView.addMarkerItem(tItem.getName(),tItem);
     }
-
     void ShowMap( android.widget.LinearLayout linearLayoutTmap , com.skt.Tmap.TMapView tMapView)
     {
         tMapView.setSKTMapApiKey(tMapKey);
         linearLayoutTmap.addView(tMapView);
     }
-
     void Locating()
     {
         tMapGPS = new TMapGpsManager(this);
@@ -224,6 +273,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             public void onClick(View v)
             {
                 safety = 0;
+                Toast.makeText(getApplicationContext(), "Basic Mode로 길을 찾습니다.", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -233,6 +283,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             public void onClick(View v)
             {
                 safety = 1;
+                Toast.makeText(getApplicationContext(), "Advenced Mode로 길을 찾습니다.", Toast.LENGTH_LONG).show();
 
             }
         });
@@ -286,14 +337,26 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 return true;
 
 
+                //public String receiveName = null;
+            //    public String receivePhone = null;
             case R.id.item2:
-                SendSMS("","");
+                SendSMS(receivePhone,"");
 
                 return true;
 
             case R.id.item3:
-                isNodeDraw = false;
+                //단말기에 내장되어 있는 연락처앱을 호출한다.
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setData(ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
 
+                setResult(Activity.RESULT_OK, intent);
+                startActivityForResult(intent, 0);
+
+                //Toast.makeText(getApplicationContext(), "SMS 권한 있음", Toast.LENGTH_SHORT).show();
+                return true;
+
+            case R.id.item4:
+                isNodeDraw = false;
                 NodeMarkerCon mNodeMarkerCon = new NodeMarkerCon();
                 mNodeMarkerCon.start();
                 return true;
@@ -301,90 +364,38 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         return false;
     }
 
-
-    ///////////////
-    //runtime permission
-
-    int PERMISSION_ALL = 1;
-    String[] PERMISSIONS = {
-            android.Manifest.permission.READ_CONTACTS,
-            android.Manifest.permission.WRITE_CONTACTS,
-            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            android.Manifest.permission.READ_SMS,
-            android.Manifest.permission.CAMERA,
-            android.Manifest.permission.SEND_SMS
-    };
-
-    public boolean hasPermissions(Context context, String... permissions) {
-        if (context != null && permissions != null) {
-            for (String permission : permissions) {
-                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-
-    private void getPermission(){
-
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.INTERNET,
-                        Manifest.permission.ACCESS_NETWORK_STATE,
-                        Manifest.permission.WAKE_LOCK,
-                        Manifest.permission.SEND_SMS
-                },
-                1000);
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (Build.VERSION.SDK_INT >= 23) {
-
-            // requestPermission의 배열의 index가 아래 grantResults index와 매칭
-            // 퍼미션이 승인되면
+        if (Build.VERSION.SDK_INT >= 23)
+        {
             if(grantResults.length > 0  && grantResults[0]== PackageManager.PERMISSION_GRANTED){
                 Log.d( ".","Permission: "+permissions[0]+ "was "+grantResults[0]);
 
             }
-            // 퍼미션이 승인 거부되면
             else {
                 Log.d(".","Permission denied");
             }
         }
     }
 
-
-
-
-
     ///////////////
     //Send MSG
-
     private void SendSMS(String phoneNumber, String message)
     {
         //SMS Permission check
         int permissonCheck= ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
         if(permissonCheck == PackageManager.PERMISSION_GRANTED)
         {
-            Toast.makeText(getApplicationContext(), "SMS 권한 있음", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "SMS 권한 있음", Toast.LENGTH_SHORT).show();
         }
         else
         {
             Toast.makeText(getApplicationContext(), "SMS 권한 없음", Toast.LENGTH_SHORT).show();
 
-            //권한설정 dialog에서 거부를 누르면
-            //ActivityCompat.shouldShowRequestPermissionRationale 메소드의 반환값이 true가 된다.
-            //단, 사용자가 "Don't ask again"을 체크한 경우
-            //거부하더라도 false를 반환하여, 직접 사용자가 권한을 부여하지 않는 이상, 권한을 요청할 수 없게 된다.
             if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS))
             {
-                //이곳에 권한이 왜 필요한지 설명하는 Toast나 dialog를 띄워준 후, 다시 권한을 요청한다.
                 Toast.makeText(getApplicationContext(), "SMS 권한이 필요합니다", Toast.LENGTH_SHORT).show();
                 ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.SEND_SMS},       1);
             }
@@ -395,8 +406,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         }
 
         //////
-        phoneNumber = "01082162178";
-        message = "Hello Android";
+        message = "to" + phoneNumber;
 
         try
         {
@@ -412,10 +422,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         }
     }
 
-
-
-
-
     ///////////////
     // Find Path
 
@@ -424,7 +430,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         m_mapPoint.add( new WayPoint("Start",myPoint.getLongitude(),myPoint.getLatitude(),0) );
         m_mapPoint.add( new WayPoint("End",endPoint.getLatitude(), endPoint.getLongitude(), 6) );
     }
-
     void DrawMarker()   //언젠가 지우는거 여기에 추가해야함.
     {
         //0 출발지 / 6 목적지
@@ -855,4 +860,151 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             e.printStackTrace();
         }
     }
+
+
+    /////////////////////////////////
+    //이미지 URL
+
+    public class GetImgUrl extends Thread
+    {
+        String _url;
+        String result;
+
+        @Override
+        public void run()
+        {
+            try
+            {
+                Double sLa = myPoint.getLongitude();
+                Double sLo = myPoint.getLatitude();
+
+                //http://api.floodnut.com/safe/node?srcLati=35.248687&srcLongti=128.682841&mode=1
+                _url =  "http://api.floodnut.com/safe/node?" +
+                        "srcLati="+  sLa +"&srcLongti="+ sLo +
+                        "&mode=" + 1;
+
+                java.net.URL url = new URL(_url);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+                if( connection != null)
+                {
+                    connection.setRequestMethod("GET");
+                    connection.setDoInput(true);
+
+                    InputStream is = connection.getInputStream();
+                    StringBuilder sb = new StringBuilder();
+                    BufferedReader br = new BufferedReader(new InputStreamReader(is,"UTF-8"));
+
+                    while((result = br.readLine())!=null)
+                    {
+                        sb.append(result+"\n");
+                    }
+
+                    result = sb.toString();
+
+                    imgUrl = result;
+                }
+
+                Thread.interrupted();
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+
+    /////////////////////////////////
+    //warning!!
+
+    public class GetWarningData extends Thread
+    {
+        String _url;
+        String result;
+
+        @Override
+        public void run()
+        {
+            try
+            {
+                m_warnPoint.clear();
+                RecievePoint(); //초기화.
+
+                Double sLa = myPoint.getLongitude();
+                Double sLo = myPoint.getLatitude();
+
+                //http://api.floodnut.com/safe/node?srcLati=35.248687&srcLongti=128.682841&mode=1
+                _url =  "http://api.floodnut.com/safe/node?" +
+                        "srcLati="+  sLa +"&srcLongti="+ sLo +
+                        "&mode=" + 1;
+
+                java.net.URL url = new URL(_url);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+                if( connection != null)
+                {
+                    connection.setRequestMethod("GET");
+                    connection.setDoInput(true);
+
+                    InputStream is = connection.getInputStream();
+                    StringBuilder sb = new StringBuilder();
+                    BufferedReader br = new BufferedReader(new InputStreamReader(is,"UTF-8"));
+
+                    while((result = br.readLine())!=null)
+                    {
+                        sb.append(result+"\n");
+                    }
+
+                    result = sb.toString();
+                }
+
+                //parsing
+                parseJSON_W(result);
+
+                /*
+                * 현재 내위치와 파싱한 모든 좌표들과의 거리비교 후 하나라도 가까우면 계속위험 알림.
+                * 벗어나면 스레드 종료.
+                */
+                TMapPoint point = new TMapPoint(37.566474, 126.985022);
+                double Distance = getDistance(point,point);
+
+
+                Thread.interrupted();
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+    }
+    public void parseJSON_W(String src)   //parsing
+    {
+        try {
+            JSONObject root = (JSONObject) new JSONTokener(src).nextValue();
+
+            JSONArray array = new JSONArray(root.getString("data"));
+
+            for(int i = 0; i < array.length(); i++)
+            {
+                String name     = "point" + i + "th";
+                String lati     = array.getJSONObject(i).getString("lati");
+                String longti   = array.getJSONObject(i).getString("longi");
+                String type = array.getJSONObject(i).getString("type");
+
+                m_warnPoint.add( i, new WayPoint( name, Double.parseDouble(lati), Double.parseDouble(longti), Integer.parseInt(type) ) );
+            }
+
+            m_warnPoint.add(0,new WayPoint( "0000",myPoint.getLatitude(), myPoint.getLongitude(),4));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+    public void Warning()
+    {
+        Toast.makeText(getApplicationContext(), "주의! 사고 다발 지역에 들어왔습니다.", Toast.LENGTH_LONG).show();
+    }
+
+    ///////end
 }

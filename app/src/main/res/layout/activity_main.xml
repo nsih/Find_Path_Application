@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
     xmlns:tools="http://schemas.android.com/tools"
-
 
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
@@ -12,7 +13,31 @@
     android:layout_gravity="start"
     tools:context="com.skt.">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
+        <Button
+            android:id="@+id/buttonSetEnd"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="목적지 설정"></Button>
+
+        <Button
+            android:id="@+id/buttonStart"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="안전 길 찾기"></Button>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayoutTmap"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:orientation="vertical"></LinearLayout>
 
 
     <LinearLayout
@@ -36,33 +61,8 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
 
 
-        <Button
-            android:id="@+id/buttonSetEnd"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="목적지 설정"></Button>
-
-        <Button
-            android:id="@+id/buttonStart"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="안전한 길 찾기"></Button>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayoutTmap"
-        android:layout_width="match_parent"
-        android:layout_height="616dp"
-        android:orientation="vertical"></LinearLayout>
-
-    <include layout="@layout/appbar"/>
 
 </LinearLayout>
+

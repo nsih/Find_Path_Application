@@ -3,12 +3,15 @@
 
     <item
         android:id="@+id/item1"
-        android:title="내 주변 안전지표 찾기" />
+        android:title="주변 안전지표 찾기" />
     <item
         android:id="@+id/item2"
-        android:title="마중 요청" />
+        android:title="마중요청" />
     <item
         android:id="@+id/item3"
+        android:title="연락처 번호 선택" />
+    <item
+        android:id="@+id/item4"
         android:title="Delete" />
 
 
