@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.provider.ContactsContract;
 import android.telephony.SmsManager;
 import android.util.Log;
@@ -387,11 +388,12 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         }
 
         //////
-        message = "to" + phoneNumber;
+        message = "http://api.floodnut.com/api/sms?longi="+myPoint.getLatitude()+"&lati="+myPoint.getLongitude();
 
         try
         {
             SmsManager smsManager = SmsManager.getDefault();
+            smsManager.sendTextMessage(phoneNumber, null, "이 곳으로 마중 와주세요!", null, null);
             smsManager.sendTextMessage(phoneNumber, null, message, null, null);
             Toast.makeText(getApplicationContext(), "전송 완료!", Toast.LENGTH_LONG).show();
         }
@@ -842,62 +844,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         }
     }
 
-
-    /////////////////////////////////
-    //이미지 URL
-    /*
-    public class GetImgUrl extends Thread
-    {
-        String _url;
-        String result;
-
-        @Override
-        public void run()
-        {
-            try
-            {
-                Double sLa = myPoint.getLongitude();
-                Double sLo = myPoint.getLatitude();
-
-                //http://api.floodnut.com/safe/node?srcLati=35.248687&srcLongti=128.682841&mode=1
-                _url =  "http://api.floodnut.com/safe/node?" +
-                        "srcLati="+  sLa +"&srcLongti="+ sLo +
-                        "&mode=" + 1;
-
-                java.net.URL url = new URL(_url);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-                if( connection != null)
-                {
-                    connection.setRequestMethod("GET");
-                    connection.setDoInput(true);
-
-                    InputStream is = connection.getInputStream();
-                    StringBuilder sb = new StringBuilder();
-                    BufferedReader br = new BufferedReader(new InputStreamReader(is,"UTF-8"));
-
-                    while((result = br.readLine())!=null)
-                    {
-                        sb.append(result+"\n");
-                    }
-
-                    result = sb.toString();
-
-                    imgUrl = result;
-                }
-
-                Thread.interrupted();
-
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-
-        }
-    }
-
-     */
-
-
     /////////////////////////////////
     //warning!!
 
@@ -990,24 +936,32 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             if(  distance < 200 )
             {
                 warn = true;
+                break;
             }
         }
 
         if(warn == true)
         {
             MainActivity.this.runOnUiThread(new Runnable() {
-                public void run() {
-                    Toast.makeText(MainActivity.this, "warn : " + distance , Toast.LENGTH_SHORT).show();
+                public void run()
+                {
+                    Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);  //진동
+                    vibrator.vibrate(500);
+
+                    Toast.makeText(MainActivity.this, "warning!" , Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "현재 보행자 사고 다발지역 " + (int) distance + "M 이내 입니다." , Toast.LENGTH_SHORT).show();
                 }
             });
         }
         else
         {
+            /*
             MainActivity.this.runOnUiThread(new Runnable() {
                 public void run() {
                     Toast.makeText(MainActivity.this, "nowarn : " + distance , Toast.LENGTH_SHORT).show();
                 }
             });
+             */
         }
     }
 
@@ -1022,15 +976,12 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
         distance = distance * 1609.344;
     }
-
     private static double deg2rad(double deg) {
         return (deg * Math.PI / 180.0);
     }
-
     private static double rad2deg(double rad) {
         return (rad * 180 / Math.PI);
     }
-
 
     ///////end
 }
