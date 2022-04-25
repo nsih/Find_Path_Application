@@ -1,7 +1,5 @@
 package com.example.myapplication;
 
-import static com.skt.Tmap.MapUtils.getDistance;
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -64,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
     private ArrayList<WayPoint> m_mapPoint = new ArrayList<WayPoint>();
     private ArrayList<WayPoint> m_nodePoint = new ArrayList<WayPoint>();
-
     private ArrayList<WayPoint> m_warnPoint = new ArrayList<WayPoint>();
 
     //private ArrayList<TMapPoint> points = new ArrayList<TMapPoint>();
@@ -969,7 +966,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 String name     = "point" + i + "th";
                 String lati     = array.getJSONObject(i).getString("lati");
                 String longti   = array.getJSONObject(i).getString("longi");
-                String type = array.getJSONObject(i).getString("type");
+                String type = ("9");
 
                 m_warnPoint.add( i, new WayPoint( name, Double.parseDouble(lati), Double.parseDouble(longti), Integer.parseInt(type) ) );
             }
@@ -988,10 +985,9 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
         for(int i = 0 ; i < m_warnPoint.size() ; i++)
         {
-            TMapPoint point = new TMapPoint(m_warnPoint.get(i).getLatitude(),m_warnPoint.get(i).getLongitude() );
-            distance = getDistance(myPoint,point);
+            Distance( myPoint.getLatitude(), myPoint.getLongitude(), m_warnPoint.get(i).getLatitude(),m_warnPoint.get(i).getLongitude());
 
-            if(  distance < 1 )
+            if(  distance < 200 )
             {
                 warn = true;
             }
@@ -1013,9 +1009,28 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 }
             });
         }
-
-
     }
+
+    public void Distance(double lat1, double lon1, double lon2, double lat2)
+    {
+        double theta = lon1 - lon2;
+        distance = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+
+        distance = Math.acos(distance);
+        distance = rad2deg(distance);
+        distance = distance * 60 * 1.1515;
+
+        distance = distance * 1609.344;
+    }
+
+    private static double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+
+    private static double rad2deg(double rad) {
+        return (rad * 180 / Math.PI);
+    }
+
 
     ///////end
 }
