@@ -322,6 +322,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 //public String receiveName = null;
             //    public String receivePhone = null;
             case R.id.item2:
+                mDistance(myPoint.getLatitude(), myPoint.getLongitude(), m_mapPoint.get(m_mapPoint.size()-1).getLatitude(),m_mapPoint.get(m_mapPoint.size()-1).getLongitude());
                 SendSMS(receivePhone,"");
 
                 return true;
@@ -364,6 +365,8 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
     ///////////////
     //Send MSG
+
+
     private void SendSMS(String phoneNumber, String message)
     {
         //SMS Permission check
@@ -395,6 +398,11 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             SmsManager smsManager = SmsManager.getDefault();
             smsManager.sendTextMessage(phoneNumber, null, "이 곳으로 마중 와주세요!", null, null);
             smsManager.sendTextMessage(phoneNumber, null, message, null, null);
+            smsManager.sendTextMessage(phoneNumber, null, (int)mdistance/66 + "분 후 도착", null, null);
+
+
+
+
             Toast.makeText(getApplicationContext(), "전송 완료!", Toast.LENGTH_LONG).show();
         }
         catch (Exception e)
@@ -923,6 +931,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     }
 
     public static double distance = 0;
+    public static double mdistance = 0;
 
     public void Warning()
     {
@@ -976,6 +985,20 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
         distance = distance * 1609.344;
     }
+
+    public void mDistance(double lat1, double lon1, double lon2, double lat2)
+    {
+        double theta = lon1 - lon2;
+        mdistance = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+
+        mdistance = Math.acos(mdistance);
+        mdistance = rad2deg(mdistance);
+        mdistance = mdistance * 60 * 1.1515;
+
+        mdistance = mdistance * 1609.344;
+    }
+
+
     private static double deg2rad(double deg) {
         return (deg * Math.PI / 180.0);
     }
