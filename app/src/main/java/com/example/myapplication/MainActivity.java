@@ -78,6 +78,9 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
     static final int SMS_RECEIVE_PERMISSON=1;
 
+    public String sAddr = null;
+    public String eAddr = null;
+
     /*
     private DrawerLayout drawerLayout;
     private View drawerView;
@@ -215,6 +218,14 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         tItem.setTMapPoint(tMapPointMarker);
         tItem.setName("end point");
         tItem.setVisible(TMapMarkerItem.VISIBLE);
+
+        //thread start
+
+        GetEndPointAddr mGetEndPointAddr = new GetEndPointAddr();
+        mGetEndPointAddr.start();
+
+
+
 
         Bitmap bitmapPass = BitmapFactory.decodeResource(context.getResources(),R.drawable.poi);
         tItem.setIcon(bitmapPass);
@@ -396,9 +407,10 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         try
         {
             SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(phoneNumber, null, "이 곳으로 마중 와주세요!", null, null);
+            smsManager.sendTextMessage(phoneNumber, null, "현재위치", null, null);
             smsManager.sendTextMessage(phoneNumber, null, message, null, null);
-            smsManager.sendTextMessage(phoneNumber, null, (int)mdistance/66 + "분 후 도착", null, null);
+            smsManager.sendTextMessage(phoneNumber, null, "목적지 : " + eAddr, null, null);
+            smsManager.sendTextMessage(phoneNumber, null, "약" + (int)mdistance/66 + "분 후 도착예정이니 마중 부탁드립니다.", null, null);
 
 
 
@@ -1005,6 +1017,30 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     private static double rad2deg(double rad) {
         return (rad * 180 / Math.PI);
     }
+
+
+    /////////////////
+
+
+    public class GetEndPointAddr extends Thread
+    {
+        double lat = endPoint.getLatitude();
+        double lon = endPoint.getLongitude();
+
+        @Override
+        public void run()
+        {
+            try{
+                eAddr = new TMapData().convertGpsToAddress(lat, lon);
+            }catch (Exception e){
+                Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+            }
+            Thread.interrupted();
+        }
+
+}
+
 
     ///////end
 }

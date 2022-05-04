@@ -37,6 +37,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
     implementation fileTree(dir: 'C:\\Users\\sih65\\AndroidStudioProjects\\MyApplication\\app\\libs', include: ['*.aar', '*.jar'], exclude: [])
     implementation 'com.google.android.material:material:1.6.0-beta01'
+    implementation files('libs\\com.skt.Tmap_1.70.jar')
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
