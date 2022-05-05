@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,6 +32,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapGpsManager;
 import com.skt.Tmap.TMapMarkerItem;
@@ -78,6 +81,9 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
     static final int SMS_RECEIVE_PERMISSON=1;
 
+    TextView startP;
+    TextView endP;
+
     public String sAddr = null;
     public String eAddr = null;
 
@@ -96,6 +102,9 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         super.onCreate((savedInstanceState));
         setContentView(R.layout.activity_main);
         setContentView(R.layout.activity_main);
+
+        startP = (TextView)findViewById(R.id.StartPoint);
+        endP = (TextView)findViewById(R.id.EndPoint);
 
 
         ActionBar actionBar = getSupportActionBar();
@@ -119,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         ShowMap(linearLayoutTmap, tMapView);
 
         button(tMapView);
+        fbutton();
 
         //Locating Permission
         if(ActivityCompat.checkSelfPermission
@@ -163,7 +173,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         tMapView.setCenterPoint(location.getLongitude(), location.getLatitude());
 
         myPoint = new TMapPoint(location.getLongitude(), location.getLatitude());
-
 
         //
         GetWarningData mGetWarningData = new GetWarningData();
@@ -221,12 +230,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
         //thread start
 
-        GetEndPointAddr mGetEndPointAddr = new GetEndPointAddr();
-        mGetEndPointAddr.start();
-
-
-
-
         Bitmap bitmapPass = BitmapFactory.decodeResource(context.getResources(),R.drawable.poi);
         tItem.setIcon(bitmapPass);
 
@@ -256,8 +259,10 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         Button buttonDefault = (Button)findViewById(R.id.buttonDefault);
         Button buttonAdvance = (Button)findViewById(R.id.buttonAdvance);
 
+        Button buttonStart = (Button)findViewById(R.id.buttonSetStart);
         Button buttonSetEnd = (Button)findViewById(R.id.buttonSetEnd);
-        Button buttonStart = (Button)findViewById(R.id.buttonStart);
+
+
 
 
         buttonDefault.setOnClickListener(new View.OnClickListener()
@@ -266,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             public void onClick(View v)
             {
                 safety = 0;
-                Toast.makeText(getApplicationContext(), "Basic Mode로 길을 찾습니다.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Basic 탐색모드", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -276,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             public void onClick(View v)
             {
                 safety = 1;
-                Toast.makeText(getApplicationContext(), "Advenced Mode로 길을 찾습니다.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Advenced 탐색모드", Toast.LENGTH_LONG).show();
 
             }
         });
@@ -285,6 +290,34 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         {
             @Override
             public void onClick(View v)
+            {
+                GetStartPointAddr mGetStartPointAddr = new GetStartPointAddr();
+                mGetStartPointAddr.start();
+            }
+        });
+
+        buttonSetEnd.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                GetEndPoint();
+
+                GetEndPointAddr mGetEndPointAddr = new GetEndPointAddr();
+                mGetEndPointAddr.start();
+            }
+        });
+
+    }
+
+
+    void fbutton()
+    {
+        FloatingActionButton fab = findViewById(R.id.fab_main);
+        fab.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
             {
                 if(isDraw == true)
                 {
@@ -296,21 +329,13 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                     isDraw = true;
                 }
 
+                GetStartPointAddr mGetStartPointAddr = new GetStartPointAddr();
+                mGetStartPointAddr.start();
 
                 GetData mGetData = new GetData();
                 mGetData.start();
             }
         });
-
-        buttonSetEnd.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                GetEndPoint();
-            }
-        });
-
     }
 
     @Override
@@ -326,16 +351,12 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                     isNodeDraw = true;
 
                 mGetNodeData.start();
-
                 return true;
 
-
-                //public String receiveName = null;
-            //    public String receivePhone = null;
             case R.id.item2:
-                mDistance(myPoint.getLatitude(), myPoint.getLongitude(), m_mapPoint.get(m_mapPoint.size()-1).getLatitude(),m_mapPoint.get(m_mapPoint.size()-1).getLongitude());
-                SendSMS(receivePhone,"");
-
+                isNodeDraw = false;
+                NodeMarkerCon mNodeMarkerCon = new NodeMarkerCon();
+                mNodeMarkerCon.start();
                 return true;
 
             case R.id.item3:
@@ -345,16 +366,14 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
                 setResult(Activity.RESULT_OK, intent);
                 startActivityForResult(intent, 0);
-
-                //Toast.makeText(getApplicationContext(), "SMS 권한 있음", Toast.LENGTH_SHORT).show();
                 return true;
 
             case R.id.item4:
-                isNodeDraw = false;
-                NodeMarkerCon mNodeMarkerCon = new NodeMarkerCon();
-                mNodeMarkerCon.start();
+                mDistance(myPoint.getLatitude(), myPoint.getLongitude(), m_mapPoint.get(m_mapPoint.size()-1).getLatitude(),m_mapPoint.get(m_mapPoint.size()-1).getLongitude());
+                SendSMS(receivePhone,"");
 
                 return true;
+
         }
         return false;
     }
@@ -407,12 +426,10 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         try
         {
             SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(phoneNumber, null, "현재위치", null, null);
+            smsManager.sendTextMessage(phoneNumber, null, "현위치 :", null, null);
             smsManager.sendTextMessage(phoneNumber, null, message, null, null);
             smsManager.sendTextMessage(phoneNumber, null, "목적지 : " + eAddr, null, null);
-            smsManager.sendTextMessage(phoneNumber, null, "약" + (int)mdistance/66 + "분 후 도착예정이니 마중 부탁드립니다.", null, null);
-
-
+            smsManager.sendTextMessage(phoneNumber, null, "약 " + (int)mdistance/66 + "분 후 도착예정이니 마중 부탁드립니다.", null, null);
 
 
             Toast.makeText(getApplicationContext(), "전송 완료!", Toast.LENGTH_LONG).show();
@@ -1022,6 +1039,26 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     /////////////////
 
 
+    public class GetStartPointAddr extends Thread
+    {
+        double lat = myPoint.getLatitude();
+        double lon = myPoint.getLongitude();
+
+        @Override
+        public void run()
+        {
+            try{
+                sAddr = new TMapData().convertGpsToAddress(lon, lat);
+                startP.setText(sAddr);
+            }catch (Exception e){
+                Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+            }
+            Thread.interrupted();
+        }
+
+    }
+
     public class GetEndPointAddr extends Thread
     {
         double lat = endPoint.getLatitude();
@@ -1032,6 +1069,9 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         {
             try{
                 eAddr = new TMapData().convertGpsToAddress(lat, lon);
+
+                endP.setText(eAddr);
+
             }catch (Exception e){
                 Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
                 e.printStackTrace();
@@ -1039,7 +1079,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             Thread.interrupted();
         }
 
-}
+    }
 
 
     ///////end
