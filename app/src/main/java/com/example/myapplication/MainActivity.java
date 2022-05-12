@@ -9,12 +9,14 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.provider.ContactsContract;
 import android.telephony.SmsManager;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -111,6 +113,10 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         //actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setIcon(R.mipmap.ic_cp);
+        //actionBar.setTitle(Html.fromHtml("<font color='#34C6BE'>Carepath </font>"));
+
+
+
 
 
         LinearLayout linearLayoutTmap = (LinearLayout) findViewById(R.id.linearLayoutTmap);
@@ -579,12 +585,25 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                         TMapPoint tMapPointStart = new TMapPoint(m_mapPoint.get(i).getLatitude() , m_mapPoint.get(i).getLongitude());
                         TMapPoint tMapPointEnd = new TMapPoint(m_mapPoint.get(i+1).getLatitude() , m_mapPoint.get(i+1).getLongitude());
 
-                        //TMapPolyLine tMapPolyLine = new TMapData().findPathData(tMapPointStart, tMapPointEnd); //자동차
-                        TMapPolyLine tMapPolyLine = new TMapData().findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,tMapPointStart, tMapPointEnd,null,0);
 
-                        tMapPolyLine.setLineColor(Color.CYAN);
-                        tMapPolyLine.setLineWidth(15);
-                        tMapView.addTMapPolyLine(m_mapPoint.get(i).getName(), tMapPolyLine);
+                        if(safety ==0)
+                        {
+                            TMapPolyLine tMapPolyLine = new TMapData().findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,tMapPointStart, tMapPointEnd,null,10);
+
+                            tMapPolyLine.setLineColor(Color.CYAN);
+                            tMapPolyLine.setLineWidth(15);
+                            tMapView.addTMapPolyLine(m_mapPoint.get(i).getName(), tMapPolyLine);
+                        }
+
+
+                        else
+                        {
+                            TMapPolyLine tMapPolyLine = new TMapData().findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,tMapPointStart, tMapPointEnd,null,4);
+
+                            tMapPolyLine.setLineColor(Color.CYAN);
+                            tMapPolyLine.setLineWidth(15);
+                            tMapView.addTMapPolyLine(m_mapPoint.get(i).getName(), tMapPolyLine);
+                        }
 
                         //TMapPolyLine tMapPolyLine = tmapdata.findPathDataWithType(TMapPathType.CAR_PATH, point1, point2);
 

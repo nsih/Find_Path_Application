@@ -29,11 +29,14 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_cp"
-        android:label="care Path"
+        android:label="Carepath"
         android:roundIcon="@mipmap/ic_cp"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
-        android:theme="@style/Theme.MyApplication">
+        android:theme="@style/Theme.MyApplication"
+        android:textColor="@android:color/darker_gray">
+
+
         <activity
             android:name=".MainActivity"
             android:exported="true">

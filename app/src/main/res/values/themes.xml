@@ -2,11 +2,9 @@
     <!-- Base application theme. -->
     <style name="Theme.MyApplication" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">#6f52e8</item>
+        <item name="colorPrimary">@color/mint</item>
         <item name="colorPrimaryDark">#6f52e8</item>
-        <item name="colorAccent">#6f52e8</item>
-
-
-        <!-- Customize your theme here. -->
+        <item name="colorAccent">@color/mint</item>
     </style>
+
 </resources>
