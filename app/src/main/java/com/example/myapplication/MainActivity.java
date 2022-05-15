@@ -54,6 +54,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import androidx.appcompat.widget.Toolbar;
 
 
 
@@ -108,12 +109,17 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         startP = (TextView)findViewById(R.id.StartPoint);
         endP = (TextView)findViewById(R.id.EndPoint);
 
-
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        //actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
+
+                /*
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setIcon(R.mipmap.ic_cp);
-        //actionBar.setTitle(Html.fromHtml("<font color='#34C6BE'>Carepath </font>"));
+        */
 
 
 
@@ -264,7 +270,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     {
         Button buttonDefault = (Button)findViewById(R.id.buttonDefault);
         Button buttonAdvance = (Button)findViewById(R.id.buttonAdvance);
-        Button buttonSafest = (Button)findViewById(R.id.buttonSafest);
 
         Button buttonStart = (Button)findViewById(R.id.buttonSetStart);
         Button buttonSetEnd = (Button)findViewById(R.id.buttonSetEnd);
@@ -275,8 +280,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             @Override
             public void onClick(View v)
             {
-                safety = 0;
-                Toast.makeText(getApplicationContext(), "Basic 탐색모드", Toast.LENGTH_LONG).show();
+                safety = 1;
             }
         });
 
@@ -285,19 +289,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             @Override
             public void onClick(View v)
             {
-                safety = 1;
-                Toast.makeText(getApplicationContext(), "Advenced 탐색모드", Toast.LENGTH_LONG).show();
-
-            }
-        });
-
-        buttonSafest.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                safety = 2;
-                Toast.makeText(getApplicationContext(), "Safest 탐색모드", Toast.LENGTH_LONG).show();
+                safety = 0;
 
             }
         });
@@ -442,7 +434,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         try
         {
             SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(phoneNumber, null, "현위치 :", null, null);
             smsManager.sendTextMessage(phoneNumber, null, message, null, null);
             smsManager.sendTextMessage(phoneNumber, null, "목적지 : " + eAddr, null, null);
             smsManager.sendTextMessage(phoneNumber, null, "약 " + (int)mdistance/66 + "분 후 도착예정이니 마중 부탁드립니다.", null, null);
@@ -598,7 +589,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
                         if(safety ==0)
                         {
-                            TMapPolyLine tMapPolyLine = new TMapData().findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,tMapPointStart, tMapPointEnd,null,10);
+                            TMapPolyLine tMapPolyLine = new TMapData().findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,tMapPointStart, tMapPointEnd,null,4);
 
                             tMapPolyLine.setLineColor(Color.CYAN);
                             tMapPolyLine.setLineWidth(15);
@@ -608,7 +599,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
                         else
                         {
-                            TMapPolyLine tMapPolyLine = new TMapData().findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,tMapPointStart, tMapPointEnd,null,4);
+                            TMapPolyLine tMapPolyLine = new TMapData().findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,tMapPointStart, tMapPointEnd,null,1);
 
                             tMapPolyLine.setLineColor(Color.CYAN);
                             tMapPolyLine.setLineWidth(15);

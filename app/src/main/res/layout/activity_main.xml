@@ -6,60 +6,82 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="670dp"
+        android:layout_gravity="start"
+        android:layout_marginLeft="3dp"
+        android:layout_marginRight="3dp"
+        android:layout_marginBottom="3dp"
         android:background="@color/white"
         android:orientation="vertical"
-        android:layout_gravity="start"
-        tools:context="com.skt.">
+        tools:context="com.skt."
+        tools:ignore="MissingConstraints">
 
+    <include layout="@layout/actionbar_main" />
+
+    <LinearLayout
+        android:layout_width="390dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingLeft="5dp"
+        android:paddingTop="5dp"
+        android:paddingRight="5dp"
+        android:paddingBottom="5dp">
 
         <LinearLayout
-            android:background="@color/white"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="35dp"
+            android:background="@color/white"
+            android:paddingBottom="2dp"
             android:orientation="horizontal">
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/buttonSetStart"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/roundc"
-                android:text="출발지"></Button>
+                android:text="출발지"
+                android:textColor="@color/black"></androidx.appcompat.widget.AppCompatButton>
 
             <TextView
+                android:id="@+id/StartPoint"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/StartPoint"
-                android:text="" />
+                android:text=""
+                android:textColor="@color/black" />
         </LinearLayout>
 
         <LinearLayout
-            android:background="@color/white"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="35dp"
+            android:background="@color/white"
             android:orientation="horizontal">
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/buttonSetEnd"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/roundc"
-                android:text="도착지"></Button>
+                android:text="도착지"
+                android:textColor="@color/black"></androidx.appcompat.widget.AppCompatButton>
 
 
             <TextView
+                android:id="@+id/EndPoint"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/EndPoint"
-                android:text="" />
+                android:text=""
+                android:textColor="@color/black" />
 
         </LinearLayout>
+
+    </LinearLayout>
 
 
         <LinearLayout
@@ -81,7 +103,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/roundc"
-                android:text="basic"></Button>
+                android:text="큰 길"></Button>
 
             <Button
                 android:id="@+id/buttonAdvance"
@@ -89,15 +111,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/roundc"
-                android:text="advanced"></Button>
-
-            <Button
-                android:id="@+id/buttonSafest"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/roundc"
-                android:text="Safest"></Button>
+                android:text="빠른 길"></Button>
 
         </LinearLayout>
 
@@ -116,6 +130,7 @@
         android:layout_marginBottom="24dp"
         app:fabCustomSize="70dp"
         android:src="@drawable/search_road"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:maxImageSize = "50dp"
