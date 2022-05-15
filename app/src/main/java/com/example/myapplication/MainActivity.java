@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
     //private ArrayList<TMapPoint> points = new ArrayList<TMapPoint>();
 
-    public static int safety = 0;
+    public static int safety = 1;
 
     public static Context context;
     public static TMapView tMapView;
@@ -114,14 +114,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
-
-                /*
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowHomeEnabled(true);
-        actionBar.setIcon(R.mipmap.ic_cp);
-        */
-
-
 
 
 
@@ -282,6 +274,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             {
                 safety = 1;
             }
+
         });
 
         buttonAdvance.setOnClickListener(new View.OnClickListener()
@@ -290,7 +283,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             public void onClick(View v)
             {
                 safety = 0;
-
             }
         });
 
@@ -317,8 +309,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         });
 
     }
-
-
     void fbutton()
     {
         FloatingActionButton fab = findViewById(R.id.fab_main);
@@ -385,6 +375,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         }
         return false;
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -586,8 +577,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                         TMapPoint tMapPointStart = new TMapPoint(m_mapPoint.get(i).getLatitude() , m_mapPoint.get(i).getLongitude());
                         TMapPoint tMapPointEnd = new TMapPoint(m_mapPoint.get(i+1).getLatitude() , m_mapPoint.get(i+1).getLongitude());
 
-
-                        if(safety ==0)
+                        if(safety == 1)
                         {
                             TMapPolyLine tMapPolyLine = new TMapData().findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,tMapPointStart, tMapPointEnd,null,4);
 
@@ -599,16 +589,14 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
                         else
                         {
-                            TMapPolyLine tMapPolyLine = new TMapData().findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,tMapPointStart, tMapPointEnd,null,1);
+                            TMapPolyLine tMapPolyLine = new TMapData().findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,tMapPointStart, tMapPointEnd,null,0);
 
                             tMapPolyLine.setLineColor(Color.CYAN);
                             tMapPolyLine.setLineWidth(15);
                             tMapView.addTMapPolyLine(m_mapPoint.get(i).getName(), tMapPolyLine);
                         }
 
-                        //TMapPolyLine tMapPolyLine = tmapdata.findPathDataWithType(TMapPathType.CAR_PATH, point1, point2);
-
-                        Thread.sleep(450);
+                        Thread.sleep(500);
                     }
                 }
 

@@ -98,19 +98,23 @@
             android:orientation="horizontal">
 
             <Button
+                android:theme="@style/Theme.MyApplication"
                 android:id="@+id/buttonDefault"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/roundc"
+                app:rippleColor="@color/mint"
                 android:text="큰 길"></Button>
 
             <Button
+                android:theme="@style/Theme.MyApplication"
                 android:id="@+id/buttonAdvance"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/roundc"
+                app:rippleColor="@color/mint"
                 android:text="빠른 길"></Button>
 
         </LinearLayout>
