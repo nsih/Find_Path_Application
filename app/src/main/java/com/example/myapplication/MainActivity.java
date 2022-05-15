@@ -264,11 +264,10 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     {
         Button buttonDefault = (Button)findViewById(R.id.buttonDefault);
         Button buttonAdvance = (Button)findViewById(R.id.buttonAdvance);
+        Button buttonSafest = (Button)findViewById(R.id.buttonSafest);
 
         Button buttonStart = (Button)findViewById(R.id.buttonSetStart);
         Button buttonSetEnd = (Button)findViewById(R.id.buttonSetEnd);
-
-
 
 
         buttonDefault.setOnClickListener(new View.OnClickListener()
@@ -288,6 +287,17 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             {
                 safety = 1;
                 Toast.makeText(getApplicationContext(), "Advenced 탐색모드", Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+        buttonSafest.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                safety = 2;
+                Toast.makeText(getApplicationContext(), "Safest 탐색모드", Toast.LENGTH_LONG).show();
 
             }
         });
