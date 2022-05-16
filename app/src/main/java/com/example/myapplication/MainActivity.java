@@ -273,6 +273,9 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             public void onClick(View v)
             {
                 safety = 1;
+
+                buttonDefault.setBackgroundResource(R.drawable.roundc2);
+                buttonAdvance.setBackgroundResource(R.drawable.roundc);
             }
 
         });
@@ -283,6 +286,9 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             public void onClick(View v)
             {
                 safety = 0;
+
+                buttonDefault.setBackgroundResource(R.drawable.roundc);
+                buttonAdvance.setBackgroundResource(R.drawable.roundc2);
             }
         });
 
