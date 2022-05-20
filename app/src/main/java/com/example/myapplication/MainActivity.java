@@ -595,7 +595,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
                         else
                         {
-                            TMapPolyLine tMapPolyLine = new TMapData().findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,tMapPointStart, tMapPointEnd,null,0);
+                            TMapPolyLine tMapPolyLine = new TMapData().findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,tMapPointStart, tMapPointEnd);
 
                             tMapPolyLine.setLineColor(Color.CYAN);
                             tMapPolyLine.setLineWidth(15);
