@@ -425,8 +425,11 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             }
         }
 
-        //////
-        message = "http://api.floodnut.com/api/sms?longi="+myPoint.getLatitude()+"&lati="+myPoint.getLongitude();
+        if(m_mapPoint.size() == 2)
+            message = "http://api.floodnut.com/api/sms?longi="+m_mapPoint.get(m_mapPoint.size() - 1).getLongitude()+"&lati="+m_mapPoint.get(m_mapPoint.size() - 1).getLatitude();
+
+        else
+            message = "http://api.floodnut.com/api/sms?longi="+m_mapPoint.get(m_mapPoint.size() - 2).getLongitude()+"&lati="+m_mapPoint.get(m_mapPoint.size() - 2).getLatitude();
 
         try
         {
