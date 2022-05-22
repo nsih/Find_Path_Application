@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     TMapGpsManager tMapGPS = null;
     public static TMapPoint myPoint;    //gps 포인트
     public static TMapPoint endPoint;   //목적지 포인트
+    public static TMapPoint meetPoint;
 
     static final int SMS_RECEIVE_PERMISSON=1;
 
@@ -93,7 +94,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     /*
     private DrawerLayout drawerLayout;
     private View drawerView;
-
      */
 
 
@@ -378,6 +378,15 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
                 return true;
 
+            /* 추가된 곳 */
+            case R.id.item5:
+
+                meetPoint = tMapView.getCenterPoint();
+                mDistance(myPoint.getLatitude(), myPoint.getLongitude(), meetPoint.getLatitude(),meetPoint.getLongitude());
+                DrawMeetMarker();
+
+                return true;
+
         }
         return false;
     }
@@ -425,11 +434,12 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             }
         }
 
-        if(m_mapPoint.size() == 2)
-            message = "http://api.floodnut.com/api/sms?longi="+m_mapPoint.get(m_mapPoint.size() - 1).getLongitude()+"&lati="+m_mapPoint.get(m_mapPoint.size() - 1).getLatitude();
-
-        else
-            message = "http://api.floodnut.com/api/sms?longi="+m_mapPoint.get(m_mapPoint.size() - 2).getLongitude()+"&lati="+m_mapPoint.get(m_mapPoint.size() - 2).getLatitude();
+//        if(m_mapPoint.size() == 2)
+//            message = "http://api.floodnut.com/api/sms?longi="+meetPoint.getLongitude()+"&lati="+meetPoint.getLatitude();
+//
+//        else
+        message = "http://api.floodnut.com/api/sms?longi="+meetPoint.getLongitude()+"&lati="+meetPoint.getLatitude();
+        System.out.println(message);
 
         try
         {
@@ -457,13 +467,46 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         m_mapPoint.add( new WayPoint("Start",myPoint.getLongitude(),myPoint.getLatitude(),0) );
         m_mapPoint.add( new WayPoint("End",endPoint.getLatitude(), endPoint.getLongitude(), 6) );
     }
+    void DrawMeetMarker(){
+        /* 마중위치 직접 선택 마커 */
+        // 7 직접 선택한 마중 위치
+
+        TMapPoint tMapPointMarker = new TMapPoint(meetPoint.getLatitude() , meetPoint.getLongitude());
+
+        TMapMarkerItem tItem = new TMapMarkerItem();
+
+        tItem.setTMapPoint(tMapPointMarker);
+        tItem.setName("마중 위치");
+        tItem.setVisible(TMapMarkerItem.VISIBLE);
+
+        Bitmap bitmapPass = BitmapFactory.decodeResource(context.getResources(),R.drawable.poi);
+        tItem.setIcon(bitmapPass);
+
+        tItem.setPosition(0.5f, 1.0f);         // 마커의 중심점을 하단, 중앙으로 설정
+
+        tMapView.addMarkerItem("마중 위치",tItem);
+    }
+
     void DrawMarker()   //언젠가 지우는거 여기에 추가해야함.
     {
         //0 출발지 / 6 목적지
         //1 CCTV / 2 경찰서,파출소,지구대 같은거 / 3 교통정보 /4 가로등 / 5 편의점
+        try{
+            if (m_mapPoint.size() == 2){
+                meetPoint.setLatitude(m_mapPoint.get(m_mapPoint.size() - 1).getLatitude());
+                meetPoint.setLongitude(m_mapPoint.get(m_mapPoint.size() - 1).getLongitude());
+            }else if(m_mapPoint.size() > 2) {
+                meetPoint.setLatitude(m_mapPoint.get(m_mapPoint.size() - 2).getLatitude());
+                meetPoint.setLongitude(m_mapPoint.get(m_mapPoint.size() - 2).getLongitude());
+            }
+        }catch(Exception e){
+
+        }
+
 
         for (int i = 0 ; i < m_mapPoint.size() ; i++)
         {
+
             if(m_mapPoint.get(i).getType() == 1)    //cctv
             {
                 TMapPoint tMapPointMarker = new TMapPoint(m_mapPoint.get(i).getLatitude() , m_mapPoint.get(i).getLongitude());
@@ -570,6 +613,8 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
                 tMapView.addMarkerItem(m_mapPoint.get(i).getName(),tItem);
             }
+
+
         }
     }
     public class FindPath extends Thread
@@ -1097,7 +1142,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         }
 
     }
-
 
     ///////end
 }
