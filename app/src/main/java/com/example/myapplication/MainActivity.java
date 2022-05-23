@@ -342,6 +342,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         });
     }
 
+    public boolean isMeetP = false;
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item)    //option
     {
@@ -384,6 +385,8 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 meetPoint = tMapView.getCenterPoint();
                 mDistance(myPoint.getLatitude(), myPoint.getLongitude(), meetPoint.getLatitude(),meetPoint.getLongitude());
                 DrawMeetMarker();
+
+                isMeetP = true;
 
                 return true;
 
@@ -434,12 +437,13 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             }
         }
 
-//        if(m_mapPoint.size() == 2)
-//            message = "http://api.floodnut.com/api/sms?longi="+meetPoint.getLongitude()+"&lati="+meetPoint.getLatitude();
-//
-//        else
-        message = "http://api.floodnut.com/api/sms?longi="+meetPoint.getLongitude()+"&lati="+meetPoint.getLatitude();
-        System.out.println(message);
+
+        if(!isMeetP)
+            message = "http://api.floodnut.com/api/sms?longi="+m_mapPoint.get(m_mapPoint.size() - 2).getLongitude()+"&lati="+m_mapPoint.get(m_mapPoint.size() - 2).getLatitude();
+
+        else
+            message = "http://api.floodnut.com/api/sms?longi="+meetPoint.getLongitude()+"&lati="+meetPoint.getLatitude();
+
 
         try
         {
