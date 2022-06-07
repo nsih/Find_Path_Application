@@ -62,7 +62,7 @@ import androidx.appcompat.widget.Toolbar;
 public class MainActivity extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback
 {
 
-    private String tMapKey = "";
+    private String tMapKey = "l7xx0cbb43a68b824ac79560cdf4d46b8060";
 
     private boolean isDraw;
     private boolean isNodeDraw;
@@ -642,6 +642,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 Double dLo = m_mapPoint.get(1).getLongitude();
 
 
+                //http://api.floodnut.com/safe/routing?srcLati=35.248687&srcLongti=128.682841&dstLati=35.237031&dstLongti=128.666649&passList=&safeDegree=1
                 _url =  "http://api.floodnut.com/safe/routing?" +
                         "srcLati="+  sLa +"&srcLongti="+ sLo +
                         "&dstLati=" + dLa + "&dstLongti=" + dLo +
@@ -726,7 +727,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 Double sLo = myPoint.getLatitude();
 
                 //http://api.floodnut.com/safe/node?srcLati=35.248687&srcLongti=128.682841&mode=1
-                _url =  "http://api.floodnut.com///?" +
+                _url =  "http://api.floodnut.com/safe/node?" +
                         "srcLati="+  sLa +"&srcLongti="+ sLo +
                         "&mode=" + 1;
 
