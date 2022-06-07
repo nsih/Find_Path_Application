@@ -15,10 +15,6 @@
         android:id="@+id/item4"
         android:title="마중 요청" />
 
-    <item
-        android:id="@+id/item5"
-        android:title="마중 위치 직접 선택" />
-
 
 
 </menu>
