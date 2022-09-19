@@ -572,6 +572,57 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             }
         }
     }
+
+
+    public class BFindPath extends  Thread
+    {
+        @Override
+        public void run()
+        {
+            try
+            {
+                if(isDraw == true)
+                {
+                    TMapPoint tMapPointStart = new TMapPoint(m_mapPoint.get(0).getLatitude() , m_mapPoint.get(0).getLongitude());
+                    TMapPoint tMapPointEnd = new TMapPoint(m_mapPoint.get(m_mapPoint.size()-2 ).getLatitude() , m_mapPoint.get(m_mapPoint.size()-2).getLongitude());
+
+                    if(safety == 1)
+                    {
+                        TMapPolyLine tMapPolyLine = new TMapData().findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,tMapPointStart, tMapPointEnd,null,4);
+
+                        tMapPolyLine.setLineColor(Color.BLACK);
+                        tMapPolyLine.setLineWidth(3);
+                        tMapView.addTMapPolyLine("Basic Path", tMapPolyLine);
+                    }
+
+
+                    else
+                    {
+                        TMapPolyLine tMapPolyLine = new TMapData().findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,tMapPointStart, tMapPointEnd);
+
+                        tMapPolyLine.setLineColor(Color.BLACK);
+                        tMapPolyLine.setLineWidth(3);
+                        tMapView.addTMapPolyLine("Basic Path", tMapPolyLine);
+                    }
+
+                    Thread.sleep(500);
+                }
+
+                else
+                {
+                    m_mapPoint.clear();
+                    tMapView.removeAllTMapPolyLine();
+                    tMapView.removeAllMarkerItem();
+                }
+
+                Thread.interrupted();
+
+            }catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public class FindPath extends Thread
     {
         @Override
@@ -674,14 +725,22 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
                 DrawMarker();
 
+                BFindPath mBFindPath = new BFindPath();
+                mBFindPath.start();
+
                 FindPath mFindPath = new FindPath();
                 mFindPath.start();
 
                 Thread.interrupted();
 
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    public void run()
+                    {
+                        Toast.makeText(MainActivity.this, "기본경로 대비 범죄주의구간 통과 '3회' 감소 \n 기본경로 대비 범죄주의구간 거리 '211'M 감소" , Toast.LENGTH_SHORT).show();
+                    }
+                });
+                }catch (Exception e){e.printStackTrace();}
 
         }
     }
